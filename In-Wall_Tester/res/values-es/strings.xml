@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">InWall Tester</string>
+	<string name="action_settings">Configuración</string>
+	<string name="bt_not_availabe">Bluetooth no disponible</string>
+	<string name="bt_not_enabled">Bluetooth no habilitado</string>
+	<string name="a2dp_connected">A2dp Conectado</string>
+	<string name="a2dp_disconnected">A2dp Desconectado</string>
+	<string name="device_not_availabe">Dispositivo no disponible</string>	
+	<string name="searching">Searching</string>	
+</resources>
