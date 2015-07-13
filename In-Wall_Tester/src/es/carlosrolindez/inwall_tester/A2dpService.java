@@ -86,7 +86,7 @@ public class A2dpService {
                 Log.e(TAG,"Found "+device.getName());
         		if (device.getAddress().substring(0,8).equals(inWallFootprint)) {
         			Log.e(TAG,"Connecting");
-//        			switchA2dp(device);
+        			switchA2dp(device);
         		}
             // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -94,49 +94,49 @@ public class A2dpService {
                 Log.e(TAG,"Discovery Finished");
             	if (!connectedA2dp) {
                     Log.e(TAG,"re-Discover");
- //           		doDiscovery();	
+            		doDiscovery();	
             	}
             
             } else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
             	((InWallTesterActivity)context).setProgressBarIndeterminateVisibility(false);
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);  
-                Log.e(TAG,"Connected "+device.getName());
- /*               if (device.getBondState()==BluetoothDevice.BOND_BONDED) {
-                    Log.e(TAG,"bonded "+device.getName());  
+                Log.e(TAG,"Connected "+device.getName()); 
+                if (device.getBondState()==BluetoothDevice.BOND_BONDED) {
                     Toast.makeText(context, device.getName() + " Connected", Toast.LENGTH_SHORT).show();
-                    playBt();     
-                    mHandler.obtainMessage(InWallHandler.MESSAGE_CONNECTED, -1, -1, device.getName()).sendToTarget();    
-                } else {
+                    mHandler.obtainMessage(InWallHandler.MESSAGE_CONNECTED, -1, -1, device.getName()).sendToTarget();  
+                    Log.e(TAG,"bonded "+device.getName());  
+                    playBt();   
+                } else if (device.getBondState()==BluetoothDevice.BOND_BONDING) {
+                    Log.e(TAG,"bonding "+device.getName());  
+                 } else {
                     Log.e(TAG,"not yet bonded "+device.getName());    
-                }*/
+                }
                
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);  
                 Toast.makeText(context, device.getName() + " Disconnected", Toast.LENGTH_SHORT).show();
-/*                if (device.getBondState()!=BluetoothDevice.BOND_BONDED) {
-                    Log.e(TAG,"Disconnected "+device.getName());
-                    connectedA2dp = false;
-                    mHandler.obtainMessage(InWallHandler.MESSAGE_DISCONNECTED, -1, -1, device.getName()).sendToTarget();
-              		if (device.getAddress().substring(0,8).equals(inWallFootprint)) {
-            			Log.e(TAG,"Unpairing");
-            			removeBond(device);
-               		}
-                    doDiscovery();  
-                } else {
-                    Log.e(TAG,"blocked disconnection - not yet bonded "+device.getName()); 
-                	switchBluetoothA2dp(device); 
-                }   */          
+                Log.e(TAG,"Disconnected "+device.getName());
+                connectedA2dp = false;
+                mHandler.obtainMessage(InWallHandler.MESSAGE_DISCONNECTED, -1, -1, device.getName()).sendToTarget();
+          		if (device.getAddress().substring(0,8).equals(inWallFootprint)) {
+        			Log.e(TAG,"Unpairing");
+        			removeBond(device);
+           		}
+                doDiscovery();  
             } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
     			Log.e(TAG,"Bonded changed "+ device.getName());
- /*               if (device.getBondState()==BluetoothDevice.BOND_BONDED) {
+                if (device.getBondState()==BluetoothDevice.BOND_BONDED) {
+                    Toast.makeText(context, device.getName() + " Connected", Toast.LENGTH_SHORT).show();
+                    mHandler.obtainMessage(InWallHandler.MESSAGE_CONNECTED, -1, -1, device.getName()).sendToTarget();                  	
         			Log.e(TAG,"Bonded");
                 	switchBluetoothA2dp(device);  
+                	playBt();  
                 } else if (device.getBondState()==BluetoothDevice.BOND_BONDING) {
         			Log.e(TAG,"Bonding");
                 } else if (device.getBondState()==BluetoothDevice.BOND_NONE) {
         			Log.e(TAG,"none");
-                }*/
+                }
                 
             }
 		}
@@ -160,7 +160,7 @@ public class A2dpService {
 				am.dispatchMediaKeyEvent(upEvent);
 
 		  	}
-		}, 2500);
+		}, 1500);
 
 
 		
@@ -341,7 +341,6 @@ public class A2dpService {
 				device.createBond();
 			} else {
 				BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-				connectedA2dp = true;
 		        Log.e(TAG,"already bonded");
 				switchBluetoothA2dp(device);
 			}
@@ -357,18 +356,19 @@ public class A2dpService {
         // Indicate scanning in the title
     	((InWallTesterActivity)mContextBt).setProgressBarIndeterminateVisibility(true);
 
+        if (mBluetoothAdapter.isDiscovering()) return;
         // Request discover from BluetoothAdapter
         mBluetoothAdapter.startDiscovery();
     }
     
     public static boolean removeBond(BluetoothDevice btDevice) {
-  /*  	try {
+    	try {
 		    Class btClass = Class.forName("android.bluetooth.BluetoothDevice");
 		    Method removeBondMethod = btClass.getMethod("removeBond");  
 		    Boolean returnValue = (Boolean) removeBondMethod.invoke(btDevice);  
 		    return returnValue.booleanValue();  
     	}catch (Exception e) {
-		}*/
+		}
 		return true;
 
     }

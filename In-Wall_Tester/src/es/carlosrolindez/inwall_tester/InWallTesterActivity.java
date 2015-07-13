@@ -11,7 +11,9 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +44,7 @@ public class InWallTesterActivity extends Activity  {
 		    finish();
 		}	
 		
+		
     }
 	
     @Override
@@ -55,6 +58,14 @@ public class InWallTesterActivity extends Activity  {
         	new A2dpService(this,handler);
         
         message =(TextView) findViewById(R.id.DeviceName); 
+		ImageButton mainButton = (ImageButton) findViewById(R.id.OffButton);
+		mainButton.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				finish();				
+			}
+		});
+
 
     }
     
@@ -85,7 +96,7 @@ public class InWallTesterActivity extends Activity  {
  		
 	@Override
 	protected void onDestroy() {
-//		A2dpService.closeService();
+		A2dpService.closeService();
 		super.onDestroy();
 	}
 		
