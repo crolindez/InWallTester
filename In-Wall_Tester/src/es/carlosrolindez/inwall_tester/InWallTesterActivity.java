@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +24,8 @@ public class InWallTesterActivity extends Activity  {
 	private final InWallHandler  handler = new InWallHandler();
 	
 	private static TextView message;
+	private static TextView messageAux;
+	
 	
 	private Context mContext;
     
@@ -58,6 +59,7 @@ public class InWallTesterActivity extends Activity  {
         	new A2dpService(this,handler);
         
         message =(TextView) findViewById(R.id.DeviceName); 
+        messageAux =(TextView) findViewById(R.id.DeviceFound); 
 		ImageButton mainButton = (ImageButton) findViewById(R.id.OffButton);
 		mainButton.setOnClickListener(new View.OnClickListener() {			
 			@Override
@@ -70,10 +72,8 @@ public class InWallTesterActivity extends Activity  {
     }
     
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	Log.e(TAG,"result");
         switch (requestCode) {
             case Constants.REQUEST_ENABLE_BT:
-            	Log.e(TAG,"REQUEST_ENABLE_BT");
                 // When the request to enable Bluetooth returns
                 if (resultCode == Activity.RESULT_OK) {
                 	new A2dpService(this,handler);
@@ -132,13 +132,16 @@ public class InWallTesterActivity extends Activity  {
 
 	    public static final int MESSAGE_CONNECTED = 1; 
 	    public static final int MESSAGE_DISCONNECTED = 2; 
+	    public static final int MESSAGE_FOUND = 3; 
+	    private String deviceName;
 		
 	    @Override
 	    public void handleMessage(Message msg) {
 	        switch (msg.what) {
 	            case MESSAGE_CONNECTED:
-	            	String deviceName = (String) msg.obj;
+	            	deviceName = (String) msg.obj;
 	            		message.setText(deviceName);
+	            		messageAux.setText("");
 	            	if ( (deviceName.length()!=11) || (!deviceName.substring(0,7).equals("KINGBT-")) ) {
 	            		message.setTextColor(Color.parseColor("#FF0000"));	            		
 	            	} else {
@@ -149,7 +152,13 @@ public class InWallTesterActivity extends Activity  {
 	                break;
 	            case MESSAGE_DISCONNECTED:
 	            	message.setText(mContext.getResources().getString(R.string.searching));
+            		messageAux.setText("");
             		message.setTextColor(Color.parseColor("#dddddd"));	
+
+	                break;
+	            case MESSAGE_FOUND:
+	            	deviceName = (String) msg.obj;
+            		messageAux.setText(mContext.getResources().getString(R.string.found) + " " + deviceName);
 
 	                break;
    	

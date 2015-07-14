@@ -77,15 +77,16 @@ public class A2dpService {
 		@Override
 		public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.e("BroadCast Receiver",action);
+
 
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.e(TAG,"Found "+device.getName());
+                mHandler.obtainMessage(InWallHandler.MESSAGE_FOUND, -1, -1, device.getName()).sendToTarget(); 
         		if (device.getAddress().substring(0,8).equals(inWallFootprint)) {
-        			Log.e(TAG,"Connecting");
+        			Log.e(TAG,"Start connection to " + device.getName());
         			switchA2dp(device);
         		}
             // When discovery is finished, change the Activity title
@@ -100,16 +101,15 @@ public class A2dpService {
             } else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
             	((InWallTesterActivity)context).setProgressBarIndeterminateVisibility(false);
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);  
-                Log.e(TAG,"Connected "+device.getName()); 
                 if (device.getBondState()==BluetoothDevice.BOND_BONDED) {
                     Toast.makeText(context, device.getName() + " Connected", Toast.LENGTH_SHORT).show();
                     mHandler.obtainMessage(InWallHandler.MESSAGE_CONNECTED, -1, -1, device.getName()).sendToTarget();  
-                    Log.e(TAG,"bonded "+device.getName());  
+                    Log.e(TAG,"Connected to bonded "+device.getName());  
                     playBt();   
                 } else if (device.getBondState()==BluetoothDevice.BOND_BONDING) {
-                    Log.e(TAG,"bonding "+device.getName());  
+                    Log.e(TAG,"Connected to bonding "+device.getName());  
                  } else {
-                    Log.e(TAG,"not yet bonded "+device.getName());    
+                    Log.e(TAG,"Connected to not bonded "+device.getName());    
                 }
                
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
@@ -119,23 +119,22 @@ public class A2dpService {
                 connectedA2dp = false;
                 mHandler.obtainMessage(InWallHandler.MESSAGE_DISCONNECTED, -1, -1, device.getName()).sendToTarget();
           		if (device.getAddress().substring(0,8).equals(inWallFootprint)) {
-        			Log.e(TAG,"Unpairing");
+        			Log.e(TAG,"Unpairing " +device.getName());
         			removeBond(device);
            		}
                 doDiscovery();  
             } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-    			Log.e(TAG,"Bonded changed "+ device.getName());
                 if (device.getBondState()==BluetoothDevice.BOND_BONDED) {
                     Toast.makeText(context, device.getName() + " Connected", Toast.LENGTH_SHORT).show();
                     mHandler.obtainMessage(InWallHandler.MESSAGE_CONNECTED, -1, -1, device.getName()).sendToTarget();                  	
-        			Log.e(TAG,"Bonded");
+        			Log.e(TAG,"Bond changed to Bonded "+ device.getName()+ " ConnectA2dp");
                 	switchBluetoothA2dp(device);  
                 	playBt();  
                 } else if (device.getBondState()==BluetoothDevice.BOND_BONDING) {
-        			Log.e(TAG,"Bonding");
+        			Log.e(TAG,"Bond changed to Bonding "+ device.getName());
                 } else if (device.getBondState()==BluetoothDevice.BOND_NONE) {
-        			Log.e(TAG,"none");
+        			Log.e(TAG,"Bond changed to none "+ device.getName());
                 }
                 
             }
@@ -187,18 +186,15 @@ public class A2dpService {
 			IntentFilter filter1 = new IntentFilter(Constants.a2dpFilter);
 			mContextBt.registerReceiver(mA2dpReceiver, filter1);
 			a2dpReceiverRegistered = true;
-			Log.e(TAG,"a2dp receiver registered ");
 		}
 		Intent i = new Intent(IBluetoothA2dp.class.getName());
 		mContextBt.bindService(i, mBtA2dpServiceConnection, Context.BIND_AUTO_CREATE);
-		Log.e(TAG,"a2dp receiver binded ");
 	}	
 
 	public static ServiceConnection mBtA2dpServiceConnection = new ServiceConnection() {
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			Log.e(TAG,"on Service Connected ");
 			mBtA2dpIsBound = true;
 			iBtA2dp = IBluetoothA2dp.Stub.asInterface(service);
 
@@ -219,7 +215,6 @@ public class A2dpService {
 
 		@Override
 		public void onReceive(Context arg0, Intent arg1) {
-			Log.e(TAG,"on BroadCastReceiver ");
 			new connectA2dpTask().execute();
 		}
 
@@ -236,14 +231,12 @@ public class A2dpService {
 		}
 
 		protected void onPreExecute() {
-			Log.e(TAG,"on PreExecute  ");
 		}
 
 		@Override
 		protected Boolean doInBackground(String... arg0) {
 			
 			BluetoothDevice device = connectingDevice;
-			Log.e(TAG,"doing in background ");
 
 			BluetoothAdapter mBTA = BluetoothAdapter.getDefaultAdapter();
 			if (mBTA == null || !mBTA.isEnabled())
@@ -253,10 +246,10 @@ public class A2dpService {
 			try {
 				if ( (A2dpService.iBtA2dp != null) && (A2dpService.iBtA2dp.getConnectionState(device) == 0) ) {
 					A2dpService.iBtA2dp.connect(device);
-					Log.e(TAG,"connect "+device.getName());
+					Log.e(TAG,"connectTask "+device.getName());
 				} else {
 					A2dpService.iBtA2dp.disconnect(device);
-					Log.e(TAG,"disconnect "+device.getName());
+					Log.e(TAG,"disconnectTask "+device.getName());
 				}
 
 			} catch (Exception e) {
@@ -270,14 +263,12 @@ public class A2dpService {
 
 	
 	public static void closeService( ){
-		Log.e(TAG,"Close service ");
 		a2dpDone();	
 		mContextBt.unregisterReceiver(mBtReceiver);
 	}
 	
 	
 	private static void a2dpDone() {
-		Log.e(TAG,"a2dpDone");
 		if (a2dpReceiverRegistered) {
 			mContextBt.unregisterReceiver(mA2dpReceiver);
 			a2dpReceiverRegistered = false;
@@ -288,7 +279,6 @@ public class A2dpService {
 	}
 	
 	public static void doUnbindServiceBtA2dp() {
-		Log.e(TAG,"Unbind");
 		if (mBtA2dpIsBound) {
 			try {
 				mContextBt.unbindService(mBtA2dpServiceConnection);
@@ -337,11 +327,9 @@ public class A2dpService {
 		if   (device != null) {
 
 			if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-		        Log.e(TAG,"Bonding");
 				device.createBond();
 			} else {
 				BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-		        Log.e(TAG,"already bonded");
 				switchBluetoothA2dp(device);
 			}
 
@@ -352,7 +340,6 @@ public class A2dpService {
      * Start device discover with the BluetoothAdapter
      */
     private static void doDiscovery() {
-        Log.e(TAG,"Start Discovery");
         // Indicate scanning in the title
     	((InWallTesterActivity)mContextBt).setProgressBarIndeterminateVisibility(true);
 

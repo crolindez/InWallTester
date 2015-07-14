@@ -7,5 +7,6 @@
 	<string name="a2dp_connected">A2dp Connected</string>
 	<string name="a2dp_disconnected">A2dp Disconnected</string>
 	<string name="device_not_availabe">Device not available</string>	
-	<string name="searching">Searching</string>	
+	<string name="searching">Searching...</string>	
+	<string name="found">Found: </string>	
 </resources>

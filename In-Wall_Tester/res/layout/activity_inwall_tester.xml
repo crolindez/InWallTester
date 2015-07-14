@@ -32,5 +32,16 @@
         	android:textSize="30sp"
         	android:textStyle="bold" 
         	android:textColor="#dddddd"/>
+        <TextView
+        	android:id="@+id/DeviceFound"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_alignParentBottom="true"
+        	android:layout_centerHorizontal="true"
+        	android:layout_marginBottom="17dp"
+        	android:text="@string/searching"
+        	android:textColor="#dddddd"
+        	android:textSize="20sp"
+        	android:textStyle="normal" />
 	</RelativeLayout>        
 </RelativeLayout>  
