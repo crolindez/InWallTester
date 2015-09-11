@@ -151,30 +151,33 @@ public class A2dpService {
 				AudioManager am = (AudioManager)mContextBt.getSystemService(Context.AUDIO_SERVICE);
 
 				long eventtime = SystemClock.uptimeMillis() - 1;
-				KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0);
+
+				Intent downIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null); 
+				Intent upIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null); 
+				
+				KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, 0); 
+				KeyEvent upEvent = 	 new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, 0);
+
+
+				downIntent.putExtra(Intent.EXTRA_KEY_EVENT, downEvent); 
+				mContextBt.sendBroadcast(downIntent, null); 
+
+				upIntent.putExtra(Intent.EXTRA_KEY_EVENT, upEvent); 
+				mContextBt.sendBroadcast(upIntent, null); 		
+				
+				
+/*				KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0);
 				am.dispatchMediaKeyEvent(downEvent);
 
 				eventtime++;
 				KeyEvent upEvent = new KeyEvent(eventtime,eventtime,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_MEDIA_PLAY, 0);         
 				am.dispatchMediaKeyEvent(upEvent);
-
+*/
 		  	}
 		}, 1500);
 
 
 		
-/*		Intent downIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null); 
-		Intent upIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null); 
-		
-		KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, 0); 
-		KeyEvent upEvent = 	 new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, 0);
-
-
-		downIntent.putExtra(Intent.EXTRA_KEY_EVENT, downEvent); 
-		mContextBt.sendBroadcast(downIntent, null); 
-
-		upIntent.putExtra(Intent.EXTRA_KEY_EVENT, upEvent); 
-		mContextBt.sendBroadcast(upIntent, null); 		*/
 		
 		
 		
@@ -317,7 +320,15 @@ public class A2dpService {
         }
     };
 
-
+   public static boolean createBond(BluetoothDevice btDevice)  
+            throws Exception  
+            { 
+                Class class1 = Class.forName("android.bluetooth.BluetoothDevice");
+                Method createBondMethod = class1.getMethod("createBond");  
+                Boolean returnValue = (Boolean) createBondMethod.invoke(btDevice);  
+                return returnValue.booleanValue();  
+        }
+    
 	
 	public static void switchA2dp (BluetoothDevice device) {
 
@@ -327,7 +338,13 @@ public class A2dpService {
 		if   (device != null) {
 
 			if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-				device.createBond();
+				try
+				{
+					createBond(device);
+				}
+				catch (Exception e)
+				{
+				}
 			} else {
 				BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
 				switchBluetoothA2dp(device);
