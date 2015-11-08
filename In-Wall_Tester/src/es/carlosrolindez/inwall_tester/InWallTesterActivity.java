@@ -12,10 +12,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +49,14 @@ public class InWallTesterActivity extends Activity  {
 		    finish();
 		}	
 		
-		
+		ListView listView = (ListView) findViewById(R.id.list);
+		deviceList = new ArrayList<String>();
+		deviceListAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, android.R.id.text1,deviceList);
+		listView.setAdapter(deviceListAdapter); 
+
+        message =(TextView) findViewById(R.id.DeviceName); 
+        messageAux =(TextView) findViewById(R.id.DeviceFound); 
+        	
     }
 	
     @Override
@@ -63,7 +69,7 @@ public class InWallTesterActivity extends Activity  {
         } else 
         	new A2dpService(this,handler);
         
-        message =(TextView) findViewById(R.id.DeviceName); 
+  /*      message =(TextView) findViewById(R.id.DeviceName); 
         messageAux =(TextView) findViewById(R.id.DeviceFound); 
 		ImageButton mainButton = (ImageButton) findViewById(R.id.OffButton);
 		mainButton.setOnClickListener(new View.OnClickListener() {			
@@ -71,7 +77,7 @@ public class InWallTesterActivity extends Activity  {
 			public void onClick(View v) {
 				finish();				
 			}
-		});
+		});*/
 
 
     }
