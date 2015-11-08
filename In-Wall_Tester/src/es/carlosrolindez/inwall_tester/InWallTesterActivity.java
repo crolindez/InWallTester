@@ -156,7 +156,12 @@ public class InWallTesterActivity extends Activity  {
 	            	if ( (deviceName.length()!=11) || (!deviceName.substring(0,7).equals("KINGBT-")) ) {
 	            		message.setTextColor(Color.parseColor("#FF0000"));	            		
 	            	} else {
-	            		message.setTextColor(Color.parseColor("#00FF00"));	   	            		
+	            		message.setTextColor(Color.parseColor("#00FF00"));	   
+						if (!deviceList.contains(message.getText()))
+						{
+							deviceList.add(0,message.getText().toString());
+							deviceListAdapter.notifyDataSetChanged(); 
+						}
 	            	}
 
 
