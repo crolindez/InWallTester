@@ -1,5 +1,7 @@
 package es.carlosrolindez.inwall_tester;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +29,8 @@ public class InWallTesterActivity extends Activity  {
 	private static TextView message;
 	private static TextView messageAux;
 	
+	private static ArrayAdapter<String> deviceListAdapter = null;
+	private static ArrayList<String> deviceList;
 	
 	private Context mContext;
     
