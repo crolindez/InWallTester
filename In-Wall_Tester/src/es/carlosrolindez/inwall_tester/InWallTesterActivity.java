@@ -1,5 +1,8 @@
 package es.carlosrolindez.inwall_tester;
 
+
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -12,7 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,8 +31,12 @@ public class InWallTesterActivity extends Activity  {
 	private static TextView message;
 	private static TextView messageAux;
 	
+	private static ArrayAdapter<String> deviceListAdapter = null;
+	private static ArrayList<String> deviceList;
+
 	
-	private Context mContext;
+	
+	private static Context mContext;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +54,21 @@ public class InWallTesterActivity extends Activity  {
 		    finish();
 		}	
 		
+		ListView listView = (ListView) findViewById(R.id.list);
+		deviceList = new ArrayList<String>();
+		deviceListAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, android.R.id.text1,deviceList);
+		listView.setAdapter(deviceListAdapter); 
+
+        message =(TextView) findViewById(R.id.DeviceName); 
+        messageAux =(TextView) findViewById(R.id.DeviceFound); 
+/*		ImageButton mainButton = (ImageButton) findViewById(R.id.OffButton);
+		mainButton.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				finish();				
+			}
+		});
+	*/	
 		
     }
 	
@@ -58,15 +82,6 @@ public class InWallTesterActivity extends Activity  {
         } else 
         	new A2dpService(this,handler);
         
-        message =(TextView) findViewById(R.id.DeviceName); 
-        messageAux =(TextView) findViewById(R.id.DeviceFound); 
-		ImageButton mainButton = (ImageButton) findViewById(R.id.OffButton);
-		mainButton.setOnClickListener(new View.OnClickListener() {			
-			@Override
-			public void onClick(View v) {
-				finish();				
-			}
-		});
 
 
     }
@@ -128,7 +143,7 @@ public class InWallTesterActivity extends Activity  {
 	
 
 	
-	public class InWallHandler extends Handler {
+	static public class InWallHandler extends Handler {
 
 	    public static final int MESSAGE_CONNECTED = 1; 
 	    public static final int MESSAGE_DISCONNECTED = 2; 
@@ -143,9 +158,14 @@ public class InWallTesterActivity extends Activity  {
 	            		message.setText(deviceName);
 	            		messageAux.setText("");
 	            	if ( (deviceName.length()!=11) || (!deviceName.substring(0,7).equals("KINGBT-")) ) {
-	            		message.setTextColor(Color.parseColor("#FF0000"));	            		
+	            		message.setTextColor(Color.parseColor("#FF0000"));	  
 	            	} else {
-	            		message.setTextColor(Color.parseColor("#00FF00"));	   	            		
+	            		message.setTextColor(Color.parseColor("#00FF00"));	   
+						if (!deviceList.contains(message.getText()))
+						{
+							deviceList.add(0,message.getText().toString());
+							deviceListAdapter.notifyDataSetChanged(); 
+						}
 	            	}
 
 

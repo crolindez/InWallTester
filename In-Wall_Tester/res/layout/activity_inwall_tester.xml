@@ -9,39 +9,43 @@
 	android:paddingTop="@dimen/activity_vertical_margin"
 	android:keepScreenOn="true"
 	tools:context="es.carlosrolindez.inwall_tester.InWallTesterActivity" >
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"  
-        android:padding="3dp"
-        android:background="@drawable/windows" >
- 		<ImageButton
-			android:id="@+id/OffButton"
-			android:layout_width="64dp"
-			android:layout_height="64dp"
-			android:layout_margin="15dp"
-			android:layout_alignParentTop="true"
-			android:layout_alignParentRight="true"
-			android:background="@drawable/power_on_selector" />
-        <TextView
-        	android:id="@+id/DeviceName"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_centerHorizontal="true"
-        	android:layout_centerVertical="true"
-        	android:text="@string/searching"
-        	android:textSize="30sp"
-        	android:textStyle="bold" 
-        	android:textColor="#dddddd"/>
-        <TextView
-        	android:id="@+id/DeviceFound"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_alignParentBottom="true"
-        	android:layout_centerHorizontal="true"
-        	android:layout_marginBottom="17dp"
-        	android:text="@string/searching"
-        	android:textColor="#dddddd"
-        	android:textSize="20sp"
-        	android:textStyle="normal" />
-	</RelativeLayout>        
+   <RelativeLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:layout_alignParentLeft="true"
+    	android:background="@drawable/windows"
+    	android:padding="3dp" >
+    	<TextView
+    		android:id="@+id/DeviceFound"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_alignParentBottom="true"
+    		android:layout_centerHorizontal="true"
+    		android:layout_margin="17dp"
+    		android:text="@string/searching"
+    		android:textColor="#dddddd"
+    		android:textSize="20sp"
+    		android:textStyle="normal" />
+    	<TextView
+    		android:id="@+id/DeviceName"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_alignTop="@+id/OffButton"
+    		android:layout_margin="14dp"
+    		android:layout_toRightOf="@id/OffButton"
+    		android:text="@string/searching"
+    		android:textColor="#dddddd"
+    		android:textSize="30sp"
+    		android:textStyle="bold"/>
+       	<ListView
+    		android:id="@+id/list"
+    		android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:layout_below="@id/DeviceName"
+    		android:layout_above="@id/DeviceFound"
+    		android:layout_margin="17dp"
+    		android:divider="#b5b5b5"
+    		android:dividerHeight="1dp" />
+
+    </RelativeLayout>
 </RelativeLayout>  
