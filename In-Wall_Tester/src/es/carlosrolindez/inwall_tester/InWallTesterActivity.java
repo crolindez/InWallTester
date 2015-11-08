@@ -61,6 +61,7 @@ public class InWallTesterActivity extends Activity  {
 
         message =(TextView) findViewById(R.id.DeviceName); 
         messageAux =(TextView) findViewById(R.id.DeviceFound); 
+        
 /*		ImageButton mainButton = (ImageButton) findViewById(R.id.OffButton);
 		mainButton.setOnClickListener(new View.OnClickListener() {			
 			@Override
