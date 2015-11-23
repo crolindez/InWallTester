@@ -28,7 +28,8 @@ import es.carlosrolindez.inwall_tester.InWallTesterActivity.InWallHandler;
 public class A2dpService {
 	private static String TAG = "A2DP Service";
 
-    private static final String inWallFootprint = "00:0D:18";
+    private static final String inWallFootprint = "00:0D:18";   
+    private static final String inWall2Footprint = "00:02:5B";
     
     private static BluetoothAdapter mBluetoothAdapter ;
 
@@ -85,7 +86,7 @@ public class A2dpService {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.e(TAG,"Found "+device.getName());
                 mHandler.obtainMessage(InWallHandler.MESSAGE_FOUND, -1, -1, device.getName()).sendToTarget(); 
-        		if (device.getAddress().substring(0,8).equals(inWallFootprint)) {
+        		if (device.getAddress().substring(0,8).equals(inWallFootprint) ||  device.getAddress().substring(0,8).equals(inWall2Footprint)) {
         			Log.e(TAG,"Start connection to " + device.getName());
         			switchA2dp(device);
         		}
