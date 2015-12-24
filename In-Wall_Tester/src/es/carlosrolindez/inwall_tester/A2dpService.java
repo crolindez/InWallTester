@@ -29,7 +29,7 @@ public class A2dpService {
 	private static String TAG = "A2DP Service";
 
     private static final String inWallFootprint = "00:0D:18";   
-    private static final String inWall2Footprint = "00:02:5B";
+    private static final String inWall2Footprint = "C1:02:5B";
     
     private static BluetoothAdapter mBluetoothAdapter ;
 
