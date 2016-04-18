@@ -3,6 +3,7 @@ package es.carlosrolindez.inwall_tester;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import android.Manifest;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -14,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Handler;
