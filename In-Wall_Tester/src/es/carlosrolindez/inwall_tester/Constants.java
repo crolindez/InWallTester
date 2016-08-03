@@ -32,6 +32,9 @@ public interface Constants {
 	public static final String a2dpFilter = "es.carlosrolindez.InWallTester.A2dpService.FILTER";
 	public static final String NameFilter = "es.carlosrolindez.InWallTester.A2dpService.NAME";
 	public static final String LAUNCH_MAC = "es.carlosrolindez.InWallTester.A2dpService.MAC";
+
+	public static final String DEVICE_NAME = "es.carlosrolindez.InWallTester.A2dpService.DEVICE_NAME";
+	public static final String DEVICE_MAC = "es.carlosrolindez.InWallTester.A2dpService.DEVICE_MAC";
 	
     // Intent request codes
 	public static final int REQUEST_ENABLE_BT = 1;

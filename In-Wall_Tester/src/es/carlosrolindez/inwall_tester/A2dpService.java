@@ -107,12 +107,12 @@ public class A2dpService {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);  
                 if (device.getBondState()==BluetoothDevice.BOND_BONDED) {
                     Toast.makeText(context, device.getName() + " Connected", Toast.LENGTH_SHORT).show();
-                    mHandler.obtainMessage(InWallHandler.MESSAGE_CONNECTED, -1, -1, device.getName()).sendToTarget();  
+                    mHandler.obtainMessage(InWallHandler.MESSAGE_CONNECTED, -1, -1, device.getAddress() + device.getName()).sendToTarget();  
                     Log.e(TAG,"Connected to bonded "+device.getName());  
                     playBt();   
                 } else if (device.getBondState()==BluetoothDevice.BOND_BONDING) {
                     Log.e(TAG,"Connected to bonding "+device.getName());  
-                 } else {
+                } else {
                     Log.e(TAG,"Connected to not bonded "+device.getName());    
                 }
                
@@ -122,7 +122,7 @@ public class A2dpService {
                 Log.e(TAG,"Disconnected "+device.getName());
                 connectedA2dp = false;
                 mHandler.obtainMessage(InWallHandler.MESSAGE_DISCONNECTED, -1, -1, device.getName()).sendToTarget();
-          		if (device.getAddress().substring(0,8).equals(inWallFootprint)) {
+          		if (device.getAddress().substring(0,8).equals(inWallFootprint) || device.getAddress().substring(0,8).equals(inWall2Footprint)) {
         			Log.e(TAG,"Unpairing " +device.getName());
         			removeBond(device);
            		}
@@ -131,7 +131,7 @@ public class A2dpService {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device.getBondState()==BluetoothDevice.BOND_BONDED) {
                     Toast.makeText(context, device.getName() + " Connected", Toast.LENGTH_SHORT).show();
-                    mHandler.obtainMessage(InWallHandler.MESSAGE_CONNECTED, -1, -1, device.getName()).sendToTarget();                  	
+                    mHandler.obtainMessage(InWallHandler.MESSAGE_CONNECTED, -1, -1, device.getAddress() + device.getName()).sendToTarget();                  	
         			Log.e(TAG,"Bond changed to Bonded "+ device.getName()+ " ConnectA2dp");
                 	switchBluetoothA2dp(device);  
                 	playBt();  

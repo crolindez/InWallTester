@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -68,18 +69,6 @@ public class InWallTesterActivity extends Activity  {
             startActivityForResult(enableIntent, Constants.REQUEST_ENABLE_BT);
         } else 
         	new A2dpService(this,handler);
-        
-  /*      message =(TextView) findViewById(R.id.DeviceName); 
-        messageAux =(TextView) findViewById(R.id.DeviceFound); 
-		ImageButton mainButton = (ImageButton) findViewById(R.id.OffButton);
-		mainButton.setOnClickListener(new View.OnClickListener() {			
-			@Override
-			public void onClick(View v) {
-				finish();				
-			}
-		});*/
-
-
     }
     
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -144,19 +133,32 @@ public class InWallTesterActivity extends Activity  {
 	    public static final int MESSAGE_CONNECTED = 1; 
 	    public static final int MESSAGE_DISCONNECTED = 2; 
 	    public static final int MESSAGE_FOUND = 3; 
+	    private String deviceMessage;
+	    private String deviceMAC;
 	    private String deviceName;
-		
+	    
 	    @Override
 	    public void handleMessage(Message msg) {
 	        switch (msg.what) {
 	            case MESSAGE_CONNECTED:
-	            	deviceName = (String) msg.obj;
-	            		message.setText(deviceName);
-	            		messageAux.setText("");
+	            	deviceMessage = (String) msg.obj;
+		            Log.e("TAG","Message: " + deviceMessage);	 
+	            	if (deviceMessage.length()>13) {
+	            		deviceName = deviceMessage.substring(17);
+			            Log.e("TAG","Name: " + deviceName);
+	            		deviceMAC = deviceMessage.substring(0, 17);
+			            Log.e("TAG","MAC: " + deviceMAC);
+	            	}	
+	            	message.setText(deviceName);
+	            	messageAux.setText(deviceMAC);
 	            	if ( (deviceName.length()!=11) || (!deviceName.substring(0,7).equals("KINGBT-")) ) {
 	            		message.setTextColor(Color.parseColor("#FF0000"));	            		
 	            	} else {
-	            		message.setTextColor(Color.parseColor("#00FF00"));	   
+	            		message.setTextColor(Color.parseColor("#00FF00"));	 
+	            		Intent msgIntent = new Intent(mContext, FTPService.class);
+	            	    msgIntent.putExtra(Constants.DEVICE_NAME, deviceName);
+	            	    msgIntent.putExtra(Constants.DEVICE_MAC, deviceMAC);
+	            	    startService(msgIntent);
 						if (!deviceList.contains(message.getText()))
 						{
 							deviceList.add(0,message.getText().toString());
