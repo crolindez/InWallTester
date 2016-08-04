@@ -28,9 +28,5 @@
             android:name=".FTPService"
             android:exported="false" >
 		</service>
-		<service
-            android:name=".FTPServicePing"
-            android:exported="false" >	
-		</service>
 	</application>
 </manifest>

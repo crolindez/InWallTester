@@ -35,6 +35,7 @@ public interface Constants {
 
 	public static final String DEVICE_NAME = "es.carlosrolindez.InWallTester.A2dpService.DEVICE_NAME";
 	public static final String DEVICE_MAC = "es.carlosrolindez.InWallTester.A2dpService.DEVICE_MAC";
+	public static final String FTP_MODE = "es.carlosrolindez.InWallTester.A2dpService.FTP_MODE";
 	
     // Intent request codes
 	public static final int REQUEST_ENABLE_BT = 1;

@@ -73,7 +73,10 @@ public class InWallTesterActivity extends Activity  {
             startActivityForResult(enableIntent, Constants.REQUEST_ENABLE_BT);
         } else {
         	new A2dpService(this,handler);
-        	Intent msgIntent = new Intent(this, FTPServicePing.class);
+        	Intent msgIntent = new Intent(this, FTPService.class);
+    	    msgIntent.putExtra(Constants.FTP_MODE, "PING");
+    	    msgIntent.putExtra(Constants.DEVICE_NAME, "");
+    	    msgIntent.putExtra(Constants.DEVICE_MAC, "");        	
         	startService(msgIntent);
             Log.e("FTPServicePing","Started");
         }
@@ -176,14 +179,17 @@ public class InWallTesterActivity extends Activity  {
 	            	}	
 	            	message.setText(deviceName);
 	            	messageAux.setText(deviceMAC);
-	            	if ( (deviceName.length()!=11) || (!deviceName.substring(0,7).equals("KINGBT-")) ) {
+            		
+	            	Intent msgIntent = new Intent(mLocalContext, FTPService.class);
+            	    msgIntent.putExtra(Constants.FTP_MODE, "REGISTER");
+            	    msgIntent.putExtra(Constants.DEVICE_NAME, deviceName);
+            	    msgIntent.putExtra(Constants.DEVICE_MAC, deviceMAC);
+            	    mLocalContext.startService(msgIntent);
+
+            	    if ( (deviceName.length()!=11) || (!deviceName.substring(0,7).equals("KINGBT-")) ) {
 	            		message.setTextColor(Color.parseColor("#FF0000"));	            		
 	            	} else {
 	            		message.setTextColor(Color.parseColor("#00FF00"));	 
-	            		Intent msgIntent = new Intent(mLocalContext, FTPService.class);
-	            	    msgIntent.putExtra(Constants.DEVICE_NAME, deviceName);
-	            	    msgIntent.putExtra(Constants.DEVICE_MAC, deviceMAC);
-	            	    mLocalContext.startService(msgIntent);
 						if (!deviceList.contains(message.getText()))
 						{
 							deviceList.add(0,message.getText().toString());
@@ -216,7 +222,7 @@ public class InWallTesterActivity extends Activity  {
 	   @Override
 	    public void onReceive(Context context, Intent intent) {
 	        Log.e("ResponseReceiver","onReceive");
-		   	String answer = intent.getStringExtra(FTPServicePing.PARAM_OUT_MSG);
+		   	String answer = intent.getStringExtra(FTPService.PARAM_OUT_MSG);
 		   	if (!answer.equals("OK")) {
 		        Log.e("ResponseReceiver","Ping NOK");
                 Toast.makeText(context, getResources().getString(R.string.No_access_to_internet), Toast.LENGTH_SHORT).show();
