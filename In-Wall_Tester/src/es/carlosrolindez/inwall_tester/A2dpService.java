@@ -14,13 +14,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.widget.Toast;
 import es.carlosrolindez.inwall_tester.InWallTesterActivity.InWallHandler;
 
@@ -47,6 +45,8 @@ public class A2dpService {
 	
     private static InWallHandler mHandler;
     
+    private static MediaPlayer mediaPlayer;
+    
 	
 
 	public A2dpService(Context context,InWallHandler handler) {
@@ -54,6 +54,8 @@ public class A2dpService {
 		mContextBt = context;
 		connectedA2dp = false;
 		mHandler = handler;
+		mediaPlayer = null;
+
 		
 		mBluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
 		mBluetoothAdapter.getProfileProxy(context, mProfileListener, BluetoothProfile.A2DP);
@@ -80,7 +82,7 @@ public class A2dpService {
 		public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-
+        	stopPlayBt();
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent
@@ -115,6 +117,7 @@ public class A2dpService {
                 }
                
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+  //          	stopPlayBt();
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);  
                 Toast.makeText(context, device.getName() + " Disconnected", Toast.LENGTH_SHORT).show();
                 Log.e(TAG,"Disconnected "+device.getName());
@@ -147,10 +150,15 @@ public class A2dpService {
 	
 	public static void playBt() 
 	{
-  		new Handler().postDelayed(new Runnable() {
+
+
+		new Handler().postDelayed(new Runnable() {
 		    @Override
 		    public void run() {
-				AudioManager am = (AudioManager)mContextBt.getSystemService(Context.AUDIO_SERVICE);
+	        	mediaPlayer=MediaPlayer.create(mContextBt,R.raw.tachan);
+		        mediaPlayer.start();
+            	mediaPlayer.setLooping(true);
+	/*			AudioManager am = (AudioManager)mContextBt.getSystemService(Context.AUDIO_SERVICE);
 
 				long eventtime = SystemClock.uptimeMillis() - 1;
 				KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0);
@@ -158,7 +166,7 @@ public class A2dpService {
 
 				eventtime++;
 				KeyEvent upEvent = new KeyEvent(eventtime,eventtime,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_MEDIA_PLAY, 0);         
-				am.dispatchMediaKeyEvent(upEvent);
+				am.dispatchMediaKeyEvent(upEvent);*/
 
 		  	}
 		}, 1500);
@@ -180,6 +188,17 @@ public class A2dpService {
 		
 		
 		
+	}
+
+	public static void stopPlayBt() 
+	{
+		if(mediaPlayer!=null)
+		{
+            mediaPlayer.stop();
+            mediaPlayer.setLooping(false);
+            mediaPlayer.release();
+            mediaPlayer = null;
+		}	
 	}
 
 	public static void switchBluetoothA2dp(BluetoothDevice device) {

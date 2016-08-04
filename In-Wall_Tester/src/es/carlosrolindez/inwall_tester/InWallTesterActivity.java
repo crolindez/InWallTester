@@ -170,12 +170,9 @@ public class InWallTesterActivity extends Activity  {
 	        switch (msg.what) {
 	            case MESSAGE_CONNECTED:
 	            	deviceMessage = (String) msg.obj;
-		            Log.e("TAG","Message: " + deviceMessage);	 
 	            	if (deviceMessage.length()>13) {
 	            		deviceName = deviceMessage.substring(17);
-			            Log.e("TAG","Name: " + deviceName);
 	            		deviceMAC = deviceMessage.substring(0, 17);
-			            Log.e("TAG","MAC: " + deviceMAC);
 	            	}	
 	            	message.setText(deviceName);
 	            	messageAux.setText(deviceMAC);
