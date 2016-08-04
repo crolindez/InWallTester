@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,7 +26,7 @@ public class InWallTesterActivity extends Activity  {
 
     private BluetoothAdapter mBluetoothAdapter = null;
     
-	private final InWallHandler  handler = new InWallHandler();
+	private final InWallHandler  handler = new InWallHandler(this);
 	
 	private static TextView message;
 	private static TextView messageAux;
@@ -32,7 +34,8 @@ public class InWallTesterActivity extends Activity  {
 	private static ArrayAdapter<String> deviceListAdapter = null;
 	private static ArrayList<String> deviceList;
 	
-	private Context mContext;
+	private ResponseReceiver mReceiver;
+	
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,8 @@ public class InWallTesterActivity extends Activity  {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(false);
 		setContentView(R.layout.activity_inwall_tester);
-		mContext = this;
+		
+
 		
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -67,8 +71,13 @@ public class InWallTesterActivity extends Activity  {
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, Constants.REQUEST_ENABLE_BT);
-        } else 
+        } else {
         	new A2dpService(this,handler);
+        	Intent msgIntent = new Intent(this, FTPServicePing.class);
+        	startService(msgIntent);
+            Log.e("FTPServicePing","Started");
+        }
+        
     }
     
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -90,9 +99,23 @@ public class InWallTesterActivity extends Activity  {
     @Override
     public void onResume() {
         super.onResume();
-    }
+        
+        IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        mReceiver = new ResponseReceiver();
+        registerReceiver(mReceiver, filter);
+        Log.e("ResponseReceiver","Registered");
+    }	
+      
 
-    
+	@Override
+	protected void onPause() {
+
+		super.onPause();
+		unregisterReceiver(mReceiver);
+        Log.e("ResponseReceiver","Unregistered");
+		mReceiver = null;
+	}   
  		
 	@Override
 	protected void onDestroy() {
@@ -125,17 +148,22 @@ public class InWallTesterActivity extends Activity  {
 
 		return super.onOptionsItemSelected(item);
 	}
-	
 
 	
-	public class InWallHandler extends Handler {
+	public static class InWallHandler extends Handler {
 
 	    public static final int MESSAGE_CONNECTED = 1; 
 	    public static final int MESSAGE_DISCONNECTED = 2; 
 	    public static final int MESSAGE_FOUND = 3; 
-	    private String deviceMessage;
-	    private String deviceMAC;
-	    private String deviceName;
+	    private static String deviceMessage;
+	    private static String deviceMAC;
+	    private static String deviceName;
+	    
+	    private static Context mLocalContext = null; 
+
+	    InWallHandler(Context context) {
+	    	mLocalContext = context;
+	    }
 	    
 	    @Override
 	    public void handleMessage(Message msg) {
@@ -155,10 +183,10 @@ public class InWallTesterActivity extends Activity  {
 	            		message.setTextColor(Color.parseColor("#FF0000"));	            		
 	            	} else {
 	            		message.setTextColor(Color.parseColor("#00FF00"));	 
-	            		Intent msgIntent = new Intent(mContext, FTPService.class);
+	            		Intent msgIntent = new Intent(mLocalContext, FTPService.class);
 	            	    msgIntent.putExtra(Constants.DEVICE_NAME, deviceName);
 	            	    msgIntent.putExtra(Constants.DEVICE_MAC, deviceMAC);
-	            	    startService(msgIntent);
+	            	    mLocalContext.startService(msgIntent);
 						if (!deviceList.contains(message.getText()))
 						{
 							deviceList.add(0,message.getText().toString());
@@ -169,14 +197,14 @@ public class InWallTesterActivity extends Activity  {
 
 	                break;
 	            case MESSAGE_DISCONNECTED:
-	            	message.setText(mContext.getResources().getString(R.string.searching));
+	            	message.setText(mLocalContext.getResources().getString(R.string.searching));
             		messageAux.setText("");
             		message.setTextColor(Color.parseColor("#dddddd"));	
 
 	                break;
 	            case MESSAGE_FOUND:
 	            	deviceName = (String) msg.obj;
-            		messageAux.setText(mContext.getResources().getString(R.string.found) + " " + deviceName);
+            		messageAux.setText(mLocalContext.getResources().getString(R.string.found) + " " + deviceName);
 
 	                break;
    	
@@ -185,6 +213,21 @@ public class InWallTesterActivity extends Activity  {
 	    }
 	}
 
-    
+	public class ResponseReceiver extends BroadcastReceiver {
+		public static final String ACTION_RESP =  "es.carlosrolinde.InWallTester.intent.action.PING";
 
+	   @Override
+	    public void onReceive(Context context, Intent intent) {
+	        Log.e("ResponseReceiver","onReceive");
+		   	String answer = intent.getStringExtra(FTPServicePing.PARAM_OUT_MSG);
+		   	if (!answer.equals("OK")) {
+		        Log.e("ResponseReceiver","Ping NOK");
+                Toast.makeText(context, getResources().getString(R.string.No_access_to_internet), Toast.LENGTH_SHORT).show();
+                finish();
+		   	}
+		   	else 	            
+		   		Log.e("FTPService","Ping OK");	
+
+	    }
+	}    
 }

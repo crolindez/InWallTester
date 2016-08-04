@@ -4,6 +4,8 @@
 	<string name="action_settings">Configuración</string>
 	<string name="bt_not_availabe">Bluetooth no disponible</string>
 	<string name="bt_not_enabled">Bluetooth no habilitado</string>
+	<string name="Access_to_internet">Acceso a Internet OK</string>
+	<string name="No_access_to_internet">Sin acceso a Internet</string>		
 	<string name="a2dp_connected">A2dp Conectado</string>
 	<string name="a2dp_disconnected">A2dp Desconectado</string>
 	<string name="device_not_availabe">Dispositivo no disponible</string>	

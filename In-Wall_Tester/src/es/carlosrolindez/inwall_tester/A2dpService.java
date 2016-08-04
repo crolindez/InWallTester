@@ -3,7 +3,6 @@ package es.carlosrolindez.inwall_tester;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import android.Manifest;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -15,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -354,7 +352,7 @@ public class A2dpService {
     
     public static boolean removeBond(BluetoothDevice btDevice) {
     	try {
-		    Class btClass = Class.forName("android.bluetooth.BluetoothDevice");
+		    Class<?> btClass = Class.forName("android.bluetooth.BluetoothDevice");
 		    Method removeBondMethod = btClass.getMethod("removeBond");  
 		    Boolean returnValue = (Boolean) removeBondMethod.invoke(btDevice);  
 		    return returnValue.booleanValue();  

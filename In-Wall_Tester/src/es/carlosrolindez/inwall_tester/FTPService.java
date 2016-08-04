@@ -19,9 +19,11 @@ public class FTPService extends IntentService {
 
 	public FTPService() {
 		super("FTPService");
+        Log.e("FTPService","UnNamed");	
 	}
 	public FTPService(String name) {
 		super(name);
+        Log.e("FTPService","Named");	
 	}
 
 	@Override
