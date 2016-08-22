@@ -48,7 +48,8 @@ public class A2dpService {
 	
     private static InWallHandler mHandler;
     
-    private static MediaPlayer mediaPlayer;
+    
+    private static AudioManager am;
     
 	
 
@@ -57,8 +58,8 @@ public class A2dpService {
 		mContextBt = context;
 		connectedA2dp = false;
 		mHandler = handler;
-		mediaPlayer = MediaPlayer.create(mContextBt,R.raw.inwall_sample);
 
+		am = (AudioManager)mContextBt.getSystemService(Context.AUDIO_SERVICE);
 		
 		mBluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
 		mBluetoothAdapter.getProfileProxy(context, mProfileListener, BluetoothProfile.A2DP);
@@ -75,8 +76,7 @@ public class A2dpService {
         context.registerReceiver(mBtReceiver, filter4);	
         context.registerReceiver(mBtReceiver, filter5);	
         context.registerReceiver(mBtReceiver, filter6);	
-        	
-
+  
 	}
 		
 	private static final BroadcastReceiver mBtReceiver = new BroadcastReceiver() {
@@ -158,10 +158,6 @@ public class A2dpService {
 		new Handler().postDelayed(new Runnable() {
 		    @Override
 		    public void run() {
-//	        	mediaPlayer=MediaPlayer.create(mContextBt,R.raw.inwall_sample);
-//		        mediaPlayer.start();
-//            	mediaPlayer.setLooping(true);
-				AudioManager am = (AudioManager)mContextBt.getSystemService(Context.AUDIO_SERVICE);
 
 				long eventtime = SystemClock.uptimeMillis() - 1;
 				KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0);
@@ -173,35 +169,21 @@ public class A2dpService {
 
 		  	}
 		}, 1500);
-
-
-		
-/*		Intent downIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null); 
-		Intent upIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null); 
-		
-		KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, 0); 
-		KeyEvent upEvent = 	 new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, 0);
-
-
-		downIntent.putExtra(Intent.EXTRA_KEY_EVENT, downEvent); 
-		mContextBt.sendBroadcast(downIntent, null); 
-
-		upIntent.putExtra(Intent.EXTRA_KEY_EVENT, upEvent); 
-		mContextBt.sendBroadcast(upIntent, null); 		*/
-		
-		
-		
+	
 	}
 
 	public static void stopPlayBt() 
 	{
-		if(mediaPlayer!=null)
-		{
-            mediaPlayer.stop();
-            mediaPlayer.setLooping(false);
-            mediaPlayer.release();
-            mediaPlayer = null;
-		}	
+	
+
+		long eventtime = SystemClock.uptimeMillis() - 1;
+		KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_STOP, 0);
+		am.dispatchMediaKeyEvent(downEvent);
+
+		eventtime++;
+		KeyEvent upEvent = new KeyEvent(eventtime,eventtime,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_MEDIA_STOP, 0);         
+		am.dispatchMediaKeyEvent(upEvent);
+
 	}
 
 	public static void switchBluetoothA2dp(BluetoothDevice device) {
