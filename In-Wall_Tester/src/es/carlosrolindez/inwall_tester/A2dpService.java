@@ -14,11 +14,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Toast;
 import es.carlosrolindez.inwall_tester.InWallTesterActivity.InWallHandler;
 
@@ -54,7 +57,7 @@ public class A2dpService {
 		mContextBt = context;
 		connectedA2dp = false;
 		mHandler = handler;
-		mediaPlayer = null;
+		mediaPlayer = MediaPlayer.create(mContextBt,R.raw.inwall_sample);
 
 		
 		mBluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
@@ -155,10 +158,10 @@ public class A2dpService {
 		new Handler().postDelayed(new Runnable() {
 		    @Override
 		    public void run() {
-	        	mediaPlayer=MediaPlayer.create(mContextBt,R.raw.tachan);
-		        mediaPlayer.start();
-            	mediaPlayer.setLooping(true);
-	/*			AudioManager am = (AudioManager)mContextBt.getSystemService(Context.AUDIO_SERVICE);
+//	        	mediaPlayer=MediaPlayer.create(mContextBt,R.raw.inwall_sample);
+//		        mediaPlayer.start();
+//            	mediaPlayer.setLooping(true);
+				AudioManager am = (AudioManager)mContextBt.getSystemService(Context.AUDIO_SERVICE);
 
 				long eventtime = SystemClock.uptimeMillis() - 1;
 				KeyEvent downEvent = new KeyEvent(eventtime, eventtime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0);
@@ -166,7 +169,7 @@ public class A2dpService {
 
 				eventtime++;
 				KeyEvent upEvent = new KeyEvent(eventtime,eventtime,KeyEvent.ACTION_UP,KeyEvent.KEYCODE_MEDIA_PLAY, 0);         
-				am.dispatchMediaKeyEvent(upEvent);*/
+				am.dispatchMediaKeyEvent(upEvent);
 
 		  	}
 		}, 1500);

@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,16 +37,21 @@ public class InWallTesterActivity extends Activity  {
 	private static ArrayList<String> deviceList;
 	
 	private ResponseReceiver mReceiver;
-	
+	private AudioManager mAudioManager;
+	private ComponentName mRemoteControlResponder;
+
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(false);
 		setContentView(R.layout.activity_inwall_tester);
 		
-
+		mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        mRemoteControlResponder = new ComponentName(getPackageName(),RemoteControlReceiver.class.getName());
+		
 		
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -103,6 +110,8 @@ public class InWallTesterActivity extends Activity  {
     public void onResume() {
         super.onResume();
         
+        mAudioManager.registerMediaButtonEventReceiver(mRemoteControlResponder);
+        
         IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         mReceiver = new ResponseReceiver();
@@ -115,6 +124,8 @@ public class InWallTesterActivity extends Activity  {
 	protected void onPause() {
 
 		super.onPause();
+		
+        mAudioManager.unregisterMediaButtonEventReceiver(mRemoteControlResponder);
 		unregisterReceiver(mReceiver);
         Log.e("ResponseReceiver","Unregistered");
 		mReceiver = null;
